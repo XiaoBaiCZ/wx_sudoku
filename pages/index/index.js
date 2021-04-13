@@ -43,13 +43,148 @@ Page({
   },
 
   onCommit: function (e) {
-    wx.showToast({
-      title: '敬请期待下个版本',
-      duration: 3000
+    wx.showLoading({
+      title: '解答中',
+      mask: true
     })
+
+    const src = this.data.src
+    const dest = this.data.dest
+
+    for (let i = 0; i < 9; i++) {
+      for (let j = 0; j < 9; j++) {
+        const k = index(i, j)
+        if (src[k] != '.') {
+          continue
+        }
+        if (dest[k] === '.') {
+          dest[k] = 0
+        }
+        dest[k]++
+        try {
+          if (dest[k] > 9 || dest[k] < 1) {
+            const res = this.revert(i, j)
+            i = res.i
+            j = res.j - 1
+            continue
+          }
+          if (!this.checkRow(i, j) || !this.checkCol(i, j) || !this.checkRange(i, j)) {
+            j--
+          }
+        } catch (e) {
+          wx.hideLoading()
+          wx.showToast({
+            title: '请检查数组',
+            duration: 3000,
+            icon: 'none',
+            mask: true
+          })
+          this.setData({
+            dest: JSON.parse(JSON.stringify(src))
+          })
+          return
+        }
+      }
+    }
+    wx.hideLoading()
+    this.setData({
+      src: this.data.dest
+    })
+  },
+
+  revert: function (i, j) {
+    const src = this.data.src
+    const dest = this.data.dest
+    let k = index(i, j)
+    this.reset(k)
+    while (k >= 0 && src[--k] != '.');
+    if (k < 0) {
+      throw ''
+    }
+    let _j = k % 9
+    let _i = (k - _j) / 9
+    return {
+      i: _i,
+      j: _j
+    }
+  },
+
+  reset: function (k) {
+    const src = this.data.src
+    const dest = this.data.dest
+    for (let i = k; i < 81; i++) {
+      if (src[i] === '.') {
+        dest[i] = '.'
+      }
+    }
+  },
+
+  checkRow: function (i, j) {
+    const dest = this.data.dest
+    let k = index(i, j)
+    const s = i * 9
+    for (let x = 0; x < 9; x++) {
+      if (x === j) {
+        continue
+      }
+      if (dest[s + x] === dest[k]) {
+        return false
+      }
+    }
+    return true
+  },
+
+  checkCol: function (i, j) {
+    const dest = this.data.dest
+    let k = index(i, j)
+    for (let x = 0; x < 9; x++) {
+      if (x === i) {
+        continue
+      }
+      if (dest[x * 9 + j] === dest[k]) {
+        return false
+      }
+    }
+    return true
+  },
+
+  checkRange: function (i, j) {
+    const dest = this.data.dest
+    let k = index(i, j)
+    const r1 = i < 3 ? 0 : i < 6 ? 3 : 6
+    const r2 = r1 + 1
+    const r3 = r2 + 1
+    const c = j < 3 ? 0 : j < 6 ? 3 : 6
+    for (let x = 0; x < 3; x++) {
+      if (r1 === i && c + x === j) {
+        continue
+      }
+      if (dest[r1 * 9 + c + x] === dest[k]) {
+        return false
+      }
+    }
+    for (let x = 0; x < 3; x++) {
+      if (r2 === i && c + x === j) {
+        continue
+      }
+      if (dest[r2 * 9 + c + x] === dest[k]) {
+        return false
+      }
+    }
+    for (let x = 0; x < 3; x++) {
+      if (r3 === i && c + x === j) {
+        continue
+      }
+      if (dest[r3 * 9 + c + x] === dest[k]) {
+        return false
+      }
+    }
+    return true
   }
   
 })
+
+const index = (i, j) => (i * 9 + j)
 
 function initSudoku() {
   return [

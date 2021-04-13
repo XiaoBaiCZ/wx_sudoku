@@ -1,7 +1,7 @@
 <!--pages/index/index.wxml-->
 <view class="container center" style="padding-top: {{ content_top }}px;">
   <view class="container sudoku row">
-    <view data-found="{{index}}" bindtap="onClickSudokuItem" class="container sudoku-item {{item != '.' ? 'sudoku-item-active' : ''}} {{index === found ? 'sudoku-item-found' : ''}} {{index % 9 === 0 ? 'sudoku-item-border-l' : ''}} {{index >= 72 ? 'sudoku-item-border-b' : ''}} {{index % 3 === 2 && index % 9 != 8 ? 'sudoku-item-border-on-r' : ''}} {{index / 9 % 3 < 1 && index / 9 > 1 ? 'sudoku-item-border-on-t' : ''}}" 
+    <view data-found="{{index}}" bindtap="onClickSudokuItem" class="container sudoku-item {{dest[index] != '.' ? 'sudoku-item-active' : ''}} {{index === found ? 'sudoku-item-found' : ''}} {{index % 9 === 0 ? 'sudoku-item-border-l' : ''}} {{index >= 72 ? 'sudoku-item-border-b' : ''}} {{index % 3 === 2 && index % 9 != 8 ? 'sudoku-item-border-on-r' : ''}} {{index / 9 % 3 < 1 && index / 9 > 1 ? 'sudoku-item-border-on-t' : ''}}" 
     wx:for="{{src}}" wx:key="sudoku" style="width: {{itemWidth}}px; height: {{itemWidth}}px;">
       {{item === '.' ? '' : item}}
     </view>
