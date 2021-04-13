@@ -1,23 +1,19 @@
-<!--index.wxml-->
-<view class="container">
-  <view class="userinfo">
-    <block wx:if="{{canIUseOpenData}}" calss="userinfo-opendata">
-      <view class="userinfo-avatar" bindtap="bindViewTap">
-        <open-data type="userAvatarUrl"></open-data>
-      </view>
-      <open-data type="userNickName"></open-data>
-    </block>
-    <block wx:elif="{{!hasUserInfo}}">
-      <button wx:if="{{canIUseGetUserProfile}}" bindtap="getUserProfile"> 获取头像昵称 </button>
-      <button wx:elif="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="getUserInfo"> 获取头像昵称 </button>
-      <view wx:else> 请使用1.4.4及以上版本基础库 </view>
-    </block>
-    <block wx:else>
-      <image bindtap="bindViewTap" class="userinfo-avatar" src="{{userInfo.avatarUrl}}" mode="cover"></image>
-      <text class="userinfo-nickname">{{userInfo.nickName}}</text>
-    </block>
+<!--pages/index/index.wxml-->
+<view class="container center" style="padding-top: {{ content_top }}px;">
+  <view class="container sudoku row">
+    <view data-found="{{index}}" bindtap="onClickSudokuItem" class="container sudoku-item {{item != '.' ? 'sudoku-item-active' : ''}} {{index === found ? 'sudoku-item-found' : ''}} {{index % 9 === 0 ? 'sudoku-item-border-l' : ''}} {{index >= 72 ? 'sudoku-item-border-b' : ''}} {{index % 3 === 2 && index % 9 != 8 ? 'sudoku-item-border-on-r' : ''}} {{index / 9 % 3 < 1 && index / 9 > 1 ? 'sudoku-item-border-on-t' : ''}}" 
+    wx:for="{{src}}" wx:key="sudoku" style="width: {{itemWidth}}px; height: {{itemWidth}}px;">
+      {{item === '.' ? '' : item}}
+    </view>
   </view>
-  <view class="usermotto">
-    <text class="user-motto">{{motto}}</text>
+  <view class="container number row">
+    <view data-value="{{item}}" catchtap="onClickNumberItem" class="container number-item" wx:for="{{number}}" wx:key="number" style="width: {{itemWidth}}px; height: {{itemWidth}}px; border-width: {{index === 0 ? '1' : ''}}rpx;">
+      {{item}}
+    </view>
+  </view>
+  <view class="container row button">
+    <text class="btn btn-reset" bindtap="onReset">重置</text>
+    <text class="btn btn-clear" bindtap="onClear">清除</text>
+    <text class="btn btn-commit" bindtap="onCommit">解题</text>
   </view>
 </view>
