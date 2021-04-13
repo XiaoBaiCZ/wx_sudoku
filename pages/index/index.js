@@ -8,6 +8,7 @@ Page({
     number: [1, 2, 3, 4, 5, 6, 7, 8, 9],
     src: initSudoku(),
     dest: initSudoku(),
+    temp: null
   },
 
   onClickSudokuItem: function (e) {
@@ -29,7 +30,8 @@ Page({
   onReset: function (e) {
     this.setData({
       src: initSudoku(),
-      dest: initSudoku()
+      dest: initSudoku(),
+      temp: null
     })
   },
 
@@ -48,20 +50,34 @@ Page({
       mask: true
     })
 
+    if (this.data.temp) {
+      this.setData({
+        src: JSON.parse(JSON.stringify(this.data.temp)),
+        dest: JSON.parse(JSON.stringify(this.data.temp)),
+        temp: null
+      })
+    }
+
     const src = this.data.src
     const dest = this.data.dest
+    this.data.temp = JSON.parse(JSON.stringify(src))
 
-    for (let i = 0; i < 9; i++) {
-      for (let j = 0; j < 9; j++) {
-        const k = index(i, j)
-        if (src[k] != '.') {
-          continue
-        }
-        if (dest[k] === '.') {
-          dest[k] = 0
-        }
-        dest[k]++
-        try {
+    const start = new Date()
+
+    try {
+      for (let i = 0; i < 9; i++) {
+        for (let j = 0; j < 9; j++) {
+          if (new Date() - start > 3000) {
+            throw '超时'
+          }
+          const k = index(i, j)
+          if (src[k] != '.') {
+            continue
+          }
+          if (dest[k] === '.') {
+            dest[k] = 0
+          }
+          dest[k]++
           if (dest[k] > 9 || dest[k] < 1) {
             const res = this.revert(i, j)
             i = res.i
@@ -71,35 +87,39 @@ Page({
           if (!this.checkRow(i, j) || !this.checkCol(i, j) || !this.checkRange(i, j)) {
             j--
           }
-        } catch (e) {
-          wx.hideLoading()
-          wx.showToast({
-            title: '请检查数组',
-            duration: 3000,
-            icon: 'none',
-            mask: true
-          })
-          this.setData({
-            dest: JSON.parse(JSON.stringify(src))
-          })
-          return
         }
       }
+    } catch (e) {
+      wx.hideLoading()
+      wx.showToast({
+        title: e,
+        duration: 3000,
+        icon: 'none',
+        mask: true
+      })
+      this.setData({
+        dest: JSON.parse(JSON.stringify(src))
+      })
+      return
     }
     wx.hideLoading()
+    wx.showToast({
+      title: `耗时${new Date() - start}毫秒`,
+      duration: 3000,
+      mask: true
+    })
     this.setData({
-      src: this.data.dest
+      src: JSON.parse(JSON.stringify(dest))
     })
   },
 
   revert: function (i, j) {
     const src = this.data.src
-    const dest = this.data.dest
     let k = index(i, j)
     this.reset(k)
     while (k >= 0 && src[--k] != '.');
     if (k < 0) {
-      throw ''
+      throw 请检查数组
     }
     let _j = k % 9
     let _i = (k - _j) / 9
