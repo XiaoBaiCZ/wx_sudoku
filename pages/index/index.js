@@ -21,6 +21,22 @@ Page({
     const value = e.target.dataset.value
     this.data.src[this.data.found] = value
     this.data.dest[this.data.found] = value
+
+    const k = this.data.found
+    let j = k % 9
+    let i = (k - j) / 9
+
+    if (!this.checkRow(i, j) || !this.checkCol(i, j) || !this.checkRange(i, j)) {
+      this.data.src[this.data.found] = '.'
+      this.data.dest[this.data.found] = '.'
+      wx.showToast({
+        title: '存在冲突',
+        duration: 3000,
+        icon: "none"
+      })
+      return
+    }
+
     this.setData({
       src: this.data.src,
       dest: this.data.dest
@@ -36,6 +52,8 @@ Page({
   },
 
   onClear: function (e) {
+    this.resetSudoku()
+
     this.data.src[this.data.found] = '.'
     this.data.dest[this.data.found] = '.'
     this.setData({
@@ -50,13 +68,7 @@ Page({
       mask: true
     })
 
-    if (this.data.temp) {
-      this.setData({
-        src: JSON.parse(JSON.stringify(this.data.temp)),
-        dest: JSON.parse(JSON.stringify(this.data.temp)),
-        temp: null
-      })
-    }
+    this.resetSudoku()
 
     const src = this.data.src
     const dest = this.data.dest
@@ -200,6 +212,16 @@ Page({
       }
     }
     return true
+  },
+
+  resetSudoku: function () {
+    if (this.data.temp) {
+      this.setData({
+        src: JSON.parse(JSON.stringify(this.data.temp)),
+        dest: JSON.parse(JSON.stringify(this.data.temp)),
+        temp: null
+      })
+    }
   }
   
 })
