@@ -81,7 +81,7 @@ Page({
     try {
       for (let i = 0; i < 9; i++) {
         for (let j = 0; j < 9; j++) {
-          if (new Date() - start > 3000) {
+          if (new Date() - start > 10 * 1000) {
             throw '超时'
           }
           const k = index(i, j)
@@ -131,9 +131,9 @@ Page({
     const src = this.data.src
     let k = index(i, j)
     this.reset(k)
-    while (k >= 0 && src[--k] != '.');
+    while (--k >= 0 && src[k] != '.');
     if (k < 0) {
-      throw 请检查数组
+      throw '数独不可解'
     }
     let _j = k % 9
     let _i = (k - _j) / 9
