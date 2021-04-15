@@ -18,6 +18,8 @@ Page({
   },
 
   onClickNumberItem: function (e) {
+    this.resetSudoku()
+    
     const value = e.target.dataset.value
     this.data.src[this.data.found] = value
     this.data.dest[this.data.found] = value
